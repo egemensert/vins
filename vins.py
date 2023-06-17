@@ -24,7 +24,7 @@ class VINS:
         negatives = []
         weights = []
         ivs = []
-        for user_id, positive_id in tqdm(zip(self.df.user_id, self.df.business_id), total=len(self.df)):
+        for user_id, positive_id in zip(self.df.user_id, self.df.business_id):
             negative_id, weight, iv = self.sample_negative(model, user_id, positive_id, use_vins=use_vins)
 
             ivs.append(iv)
@@ -69,10 +69,12 @@ class VINS:
         denominator = 1 + 0.5 * (np.log2(self.Z + 1) - 1)
         weight = numerator / denominator
 
-        deg = self.degrees[best_negative]
-        n = deg ** (1 - self.beta) * self.pi_all
-        d = self.edges - deg
-        iv = n / d
+        iv = None
+        if best_negative != None:
+            deg = self.degrees[best_negative]
+            n = deg ** (1 - self.beta) * self.pi_all
+            d = self.edges - deg
+            iv = n / d
 
         return best_negative, weight, iv
 

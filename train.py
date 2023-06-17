@@ -68,7 +68,7 @@ def main(embedding_size, beta, margin, batch_size, max_step, epochs, use_vins):
         }))
 
 
-    for epoch in tqdm(range(epochs), total=epochs):
+    for epoch in range(epochs):
         df_epoch = vins.generate_dataset(model, use_vins=use_vins)
         df_epoch.to_parquet(f'{run_id}_{epoch}.parquet')
         avg_iv = df_epoch['iv'].mean()
