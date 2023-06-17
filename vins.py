@@ -70,7 +70,7 @@ class VINS:
         weight = numerator / denominator
 
         iv = None
-        if best_negative != None:
+        if best_negative in self.degrees:
             deg = self.degrees[best_negative]
             n = deg ** (1 - self.beta) * self.pi_all
             d = self.edges - deg
