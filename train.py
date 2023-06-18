@@ -69,7 +69,13 @@ def main(embedding_size, beta, margin, batch_size, max_step, epochs, use_vins):
 
 
     for epoch in range(epochs):
-        df_epoch = vins.generate_dataset(model, use_vins=use_vins)
+
+        ####### VINS Implementation #######
+        
+        df_epoch = vins.generate_dataset(model, use_vins=use_vins) # this line
+
+        ####### VINS Implementation #######
+
         df_epoch.to_parquet(f'{run_id}_{epoch}.parquet')
         avg_iv = df_epoch['iv'].mean()
         max_iv = df_epoch['iv'].max()

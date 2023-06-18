@@ -3,6 +3,11 @@ from tqdm import tqdm
 
 class VINS:
     def __init__(self, df, max_step, margin, beta=0.9) -> None:
+        '''
+            VINS, takes a dataset with positive user-item interactions
+            and then samples a negative item for each user-item interaction
+            in the dataset.
+        '''
         self.df = df.copy()
         self.beta = beta
         self.max_step = max_step
@@ -20,7 +25,7 @@ class VINS:
 
 
     def generate_dataset(self, model, use_vins=True):
-        ''' generates dataset with negative examples '''
+        ''' generates dataset with negative examples given the model '''
         negatives = []
         weights = []
         ivs = []
@@ -40,7 +45,9 @@ class VINS:
         return new_df.dropna()
 
     def sample_negative(self, model, user_id, positive_id, max_shot=5, use_vins=True):
-        ''' samples a negative example given user - business interaction '''
+        ''' samples a negative example given user - business interaction
+            Implementation of VINS (Appendix C, Algorithm 1) 
+        '''
         x_pos = self.score(model, user_id, positive_id)
         best_score = -1
         best_negative = None
@@ -80,6 +87,7 @@ class VINS:
 
 
     def reject_sampler(self, user_id, positive_id, max_shot, use_vins):
+        ''' Implementation of Reject Sampler (Appendix C, Algorithm 2)'''
         candidate_set = list(self.all_businesss - self.user_history[user_id])
         for _ in range(max_shot):
             business_id = np.random.choice(candidate_set)
@@ -92,8 +100,10 @@ class VINS:
         
 
     def pi(self, business_id):
+        ''' this is the implementation of pi function in the paper. '''
         deg = self.degrees[business_id]
         return deg ** self.beta
     
     def score(self, model,  user_id, business_id):
+        ''' call to the supplied model to get the score of user - item interaction '''
         return model.get_score(user_id, business_id)

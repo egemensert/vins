@@ -4,6 +4,7 @@ import torch.nn as nn
 class MatrixFactorization(nn.Module):
 
     def __init__(self, n_users, n_items, n_factors=20):
+        ''' this is a simple matrix factorization model using embeddings. '''
         super().__init__()
         print('Num users:', n_users)
         print('Num items:', n_items)
@@ -17,6 +18,9 @@ class MatrixFactorization(nn.Module):
         return (self.user_factors(user) * self.business_factors(business)).sum(1)
     
     def get_score(self, user_id, business_id):
+        ''' this function is utilized by VINS to get the score
+            of supplied user and item (business) id.
+        '''
         with torch.no_grad():
             user_id = torch.LongTensor([user_id])
             business_id = torch.LongTensor([business_id])
@@ -24,6 +28,7 @@ class MatrixFactorization(nn.Module):
             return self.forward(user_id, business_id).item()
             
     def recommend_businesses(self, user, k=10):
+        ''' this function recommends top 10 items to users '''
         with torch.no_grad():
             user_embedding = self.user_factors(user)
             item_embeddings = self.business_factors.weight
@@ -32,6 +37,7 @@ class MatrixFactorization(nn.Module):
             return top_k_items
         
     def evaluate(self, user_ids, bus_ids, k=10):
+        ''' function to calculate F1@10 and NDCG@10 on test set. '''
         user_ids = torch.LongTensor(user_ids)
         bus_ids = torch.LongTensor(bus_ids)
         recommendations = self.recommend_businesses(user_ids)
